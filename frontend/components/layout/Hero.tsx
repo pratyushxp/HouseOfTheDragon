@@ -2,25 +2,27 @@
 
 export default function Hero() {
   return (
-    <section className="rounded-3xl border border-white/5 bg-white/[0.015] backdrop-blur-md px-10 py-12">
+    <section className="rounded-3xl border border-white/5 bg-white/[0.015] px-5 py-8 backdrop-blur-md sm:px-8 md:px-10 md:py-12">
 
       <div className="flex flex-col items-center text-center">
 
-        <p className="uppercase tracking-[0.35em] text-yellow-400 text-lg font-semibold">
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-yellow-400 sm:text-base md:text-lg md:tracking-[0.35em]">
           AI Fandom Intelligence
         </p>
 
         <h1
-          className="mt-4 text-white leading-none"
+          className="mt-4 text-white leading-tight"
           style={{
             fontFamily: '"Times New Roman", serif',
-            fontSize: "4rem",
+            fontSize: "clamp(2.2rem, 7vw, 4rem)",
           }}
         >
-          House of the Dragon Observatory
+          House of the
+          <br className="md:hidden" />
+          {" "}Dragon Observatory
         </h1>
 
-        <p className="mt-6 max-w-4xl text-lg leading-8 text-gray-300">
+        <p className="mt-5 max-w-4xl px-2 text-base leading-7 text-gray-300 sm:text-lg md:mt-6 md:px-0 md:text-lg md:leading-8">
           Discover community sentiment, character popularity and AI-generated
           insights from over{" "}
           <span className="font-semibold text-yellow-400">
@@ -29,9 +31,9 @@ export default function Hero() {
           YouTube discussions.
         </p>
 
-        <div className="mt-8 inline-flex items-center rounded-full border border-yellow-500/20 bg-yellow-500/5 px-7 py-3">
+        <div className="mt-7 inline-flex max-w-full items-center rounded-full border border-yellow-500/20 bg-yellow-500/5 px-5 py-3 text-center sm:px-7">
 
-          <span className="font-semibold text-yellow-300">
+          <span className="text-sm font-semibold text-yellow-300 sm:text-base">
             5,100 YouTube Discussions Analysed
           </span>
 

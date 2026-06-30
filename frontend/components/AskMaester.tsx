@@ -49,21 +49,16 @@ export default function AskMaester({
         }),
       });
 
-      if (!res.ok) {
-        throw new Error("Backend Error");
-      }
+      if (!res.ok) throw new Error("Backend Error");
 
       const data = await res.json();
 
       setAnswer(data.answer ?? "No answer returned.");
       setEvidence(data.evidence ?? []);
-    } catch (err) {
-      console.error(err);
-
+    } catch {
       setAnswer(
         "The AI service couldn't generate a response. Please try again."
       );
-
       setEvidence([]);
     }
 
@@ -79,35 +74,40 @@ export default function AskMaester({
   }
 
   return (
-    <section className="mt-12 rounded-3xl border border-white/5 bg-white/[0.015] backdrop-blur-md p-10">
+    <section className="mt-8 rounded-3xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-md sm:p-8 md:mt-12 md:p-10">
+
       <div className="text-center">
+
         <h2
           className="text-white"
           style={{
             fontFamily: '"Times New Roman", serif',
-            fontSize: "3rem",
+            fontSize: "clamp(2rem,6vw,3rem)",
           }}
         >
           Ask the Maester
         </h2>
 
-        <p className="mt-3 text-lg text-gray-400">
+        <p className="mt-3 text-base text-gray-400 md:text-lg">
           Ask questions based on 5,100 YouTube discussions.
         </p>
+
       </div>
 
       {!asked && (
-        <div className="mt-10">
+        <div className="mt-8 md:mt-10">
+
           <p className="mb-6 text-center font-semibold text-yellow-400">
             Suggested Questions
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
+
             {suggestions.map((q) => (
               <button
                 key={q}
                 onClick={() => askQuestion(q)}
-                className="rounded-full border border-yellow-500/20 bg-yellow-500/5 px-5 py-3 text-yellow-300 transition duration-300 hover:bg-yellow-500 hover:text-black"
+                className="rounded-full border border-yellow-500/20 bg-yellow-500/5 px-4 py-2 text-sm text-yellow-300 transition hover:bg-yellow-500 hover:text-black sm:px-5 sm:py-3 sm:text-base"
               >
                 {q}
               </button>
@@ -120,23 +120,24 @@ export default function AskMaester({
                     `What do YouTube viewers think about ${selectedCharacter}?`
                   )
                 }
-                className="rounded-full border border-yellow-500/20 bg-yellow-500/5 px-5 py-3 text-yellow-300 transition duration-300 hover:bg-yellow-500 hover:text-black"
+                className="rounded-full border border-yellow-500/20 bg-yellow-500/5 px-4 py-2 text-sm text-yellow-300 transition hover:bg-yellow-500 hover:text-black sm:px-5 sm:py-3 sm:text-base"
               >
                 What do viewers think about {selectedCharacter}?
               </button>
             )}
+
           </div>
+
         </div>
       )}
 
-      <div className="mt-10 flex gap-4">
+      <div className="mt-8 flex flex-col gap-3 md:mt-10 md:flex-row">
+
         <input
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              askQuestion();
-            }
+            if (e.key === "Enter") askQuestion();
           }}
           placeholder="Ask your own question..."
           className="flex-1 rounded-xl border border-white/5 bg-black/5 px-5 py-4 text-white outline-none placeholder:text-gray-500"
@@ -144,7 +145,7 @@ export default function AskMaester({
 
         <button
           onClick={() => askQuestion()}
-          className="rounded-xl bg-yellow-500 px-8 font-semibold text-black transition duration-300 hover:bg-yellow-400"
+          className="rounded-xl bg-yellow-500 px-8 py-4 font-semibold text-black transition hover:bg-yellow-400"
         >
           Ask
         </button>
@@ -152,63 +153,75 @@ export default function AskMaester({
         {asked && (
           <button
             onClick={newQuestion}
-            className="rounded-xl border border-white/5 bg-white/[0.02] px-6 text-white transition duration-300 hover:bg-white/10"
+            className="rounded-xl border border-white/5 bg-white/[0.02] px-6 py-4 text-white transition hover:bg-white/10"
           >
             New Question
           </button>
         )}
+
       </div>
 
       {loading && (
-        <div className="mt-10 text-center text-yellow-400">
-          Searching YouTube discussions...
+        <div className="mt-8 text-center text-yellow-400 md:mt-10">
+          ⚔️ The Maester is consulting ancient scrolls...
         </div>
       )}
 
       {!loading && answer && (
         <>
-          <div className="mt-10 rounded-2xl border border-white/5 bg-black/5 p-8">
+
+          <div className="mt-8 rounded-2xl border border-white/5 bg-black/5 p-5 sm:p-6 md:mt-10 md:p-8">
+
             <h3
               className="mb-6 text-center text-yellow-400"
               style={{
                 fontFamily: '"Times New Roman", serif',
-                fontSize: "2rem",
+                fontSize: "clamp(1.6rem,5vw,2rem)",
               }}
             >
               AI Answer
             </h3>
 
-            <p className="whitespace-pre-wrap leading-9 text-gray-300">
+            <p className="whitespace-pre-wrap text-base leading-8 text-gray-300 md:text-lg md:leading-9">
               {answer}
             </p>
+
           </div>
 
           {evidence.length > 0 && (
-            <div className="mt-8 rounded-2xl border border-white/5 bg-black/5 p-8">
+
+            <div className="mt-8 rounded-2xl border border-white/5 bg-black/5 p-5 sm:p-6 md:p-8">
+
               <h3
                 className="mb-6 text-center text-yellow-400"
                 style={{
                   fontFamily: '"Times New Roman", serif',
-                  fontSize: "2rem",
+                  fontSize: "clamp(1.6rem,5vw,2rem)",
                 }}
               >
                 Evidence from YouTube Comments
               </h3>
 
               <div className="max-h-[420px] space-y-4 overflow-y-auto">
+
                 {evidence.map((comment, index) => (
                   <div
                     key={index}
-                    className="rounded-xl border border-white/5 bg-white/[0.02] p-5 leading-7 text-gray-300"
+                    className="rounded-xl border border-white/5 bg-white/[0.02] p-4 leading-7 text-gray-300 md:p-5"
                   >
                     {comment}
                   </div>
                 ))}
+
               </div>
+
             </div>
+
           )}
+
         </>
       )}
+
     </section>
   );
 }

@@ -28,8 +28,7 @@ export default function Dashboard() {
   const [selectedCharacter, setSelectedCharacter] =
     useState<string | null>(null);
 
-  const [selectedMentions, setSelectedMentions] =
-    useState(0);
+  const [selectedMentions, setSelectedMentions] = useState(0);
 
   useEffect(() => {
     fetch("/api/stats")
@@ -43,7 +42,7 @@ export default function Dashboard() {
 
   if (!stats) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-black text-white text-3xl">
+      <main className="flex min-h-screen items-center justify-center bg-black px-6 text-center text-2xl text-white md:text-3xl">
         Loading...
       </main>
     );
@@ -59,12 +58,11 @@ export default function Dashboard() {
     >
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-8 py-10">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 md:px-8 md:py-10">
 
         <Hero />
 
-        <section className="mt-10">
-
+        <section className="mt-8 md:mt-10">
           <CharacterExplorer
             characters={characters}
             selectedCharacter={selectedCharacter}
@@ -73,28 +71,22 @@ export default function Dashboard() {
               setSelectedMentions(mentions);
             }}
           />
-
         </section>
 
-        <section className="mt-10">
-
+        <section className="mt-8 md:mt-10">
           <CharacterPanel
             character={selectedCharacter}
             mentions={selectedMentions}
           />
-
         </section>
 
-        <section className="mt-10">
-
+        <section className="mt-8 md:mt-10">
           <AskMaester
             selectedCharacter={selectedCharacter}
           />
-
         </section>
 
       </div>
-
     </main>
   );
 }

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from google import genai
+import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 

@@ -1,0 +1,1 @@
+print("Welcome to House of the Dragon Fandom Observatory")

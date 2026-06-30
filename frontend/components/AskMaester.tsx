@@ -1,0 +1,242 @@
+"use client";
+
+import { useState } from "react";
+
+type Props = {
+  selectedCharacter?: string | null;
+};
+
+export default function AskMaester({
+  selectedCharacter,
+}: Props) {
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [evidence, setEvidence] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [asked, setAsked] = useState(false);
+
+  const suggestions = [
+    "Why is Daemon so popular?",
+    "Who is the most controversial character?",
+    "Compare Rhaenyra and Alicent.",
+    "Why do fans support Team Black?",
+    "Who is viewed as the biggest villain?",
+    "Which character receives the most criticism?",
+  ];
+
+  async function askQuestion(customQuestion?: string) {
+    const currentQuestion = customQuestion ?? question;
+
+    if (!currentQuestion.trim()) return;
+
+    setAsked(true);
+    setQuestion(currentQuestion);
+    setLoading(true);
+    setAnswer("");
+    setEvidence([]);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: currentQuestion,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Backend Error");
+      }
+
+      const data = await res.json();
+
+      setAnswer(data.answer ?? "No answer returned.");
+      setEvidence(data.evidence ?? []);
+    } catch (err) {
+      console.error(err);
+
+      setAnswer(
+        "The AI service couldn't generate a response. Please try again."
+      );
+
+      setEvidence([]);
+    }
+
+    setLoading(false);
+  }
+
+  function newQuestion() {
+    setQuestion("");
+    setAnswer("");
+    setEvidence([]);
+    setAsked(false);
+    setLoading(false);
+  }
+
+  return (
+    <section className="mt-12 rounded-3xl border border-white/5 bg-white/[0.015] backdrop-blur-md p-10">
+
+      <div className="text-center">
+
+        <h2
+          className="text-white"
+          style={{
+            fontFamily: '"Times New Roman", serif',
+            fontSize: "3rem",
+          }}
+        >
+          Ask the Maester
+        </h2>
+
+        <p className="mt-3 text-lg text-gray-400">
+          Ask questions based on 5,100 YouTube discussions.
+        </p>
+
+      </div>
+
+      {!asked && (
+
+        <div className="mt-10">
+
+          <p className="mb-6 text-center font-semibold text-yellow-400">
+            Suggested Questions
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-4">
+
+            {suggestions.map((q) => (
+
+              <button
+                key={q}
+                onClick={() => askQuestion(q)}
+                className="rounded-full border border-yellow-500/20 bg-yellow-500/5 px-5 py-3 text-yellow-300 transition duration-300 hover:bg-yellow-500 hover:text-black"
+              >
+                {q}
+              </button>
+
+            ))}
+
+            {selectedCharacter && (
+
+              <button
+                onClick={() =>
+                  askQuestion(
+                    `What do YouTube viewers think about ${selectedCharacter}?`
+                  )
+                }
+                className="rounded-full border border-yellow-500/20 bg-yellow-500/5 px-5 py-3 text-yellow-300 transition duration-300 hover:bg-yellow-500 hover:text-black"
+              >
+                What do viewers think about {selectedCharacter}?
+              </button>
+
+            )}
+
+          </div>
+
+        </div>
+
+      )}
+
+      <div className="mt-10 flex gap-4">
+
+        <input
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              askQuestion();
+            }
+          }}
+          placeholder="Ask your own question..."
+          className="flex-1 rounded-xl border border-white/5 bg-black/5 px-5 py-4 text-white outline-none placeholder:text-gray-500"
+        />
+
+        <button
+          onClick={() => askQuestion()}
+          className="rounded-xl bg-yellow-500 px-8 font-semibold text-black transition duration-300 hover:bg-yellow-400"
+        >
+          Ask
+        </button>
+
+        {asked && (
+          <button
+            onClick={newQuestion}
+            className="rounded-xl border border-white/5 bg-white/[0.02] px-6 text-white transition duration-300 hover:bg-white/10"
+          >
+            New Question
+          </button>
+        )}
+
+      </div>
+
+      {loading && (
+
+        <div className="mt-10 text-center text-yellow-400">
+          Searching YouTube discussions...
+        </div>
+
+      )}
+
+      {!loading && answer && (
+
+        <>
+          <div className="mt-10 rounded-2xl border border-white/5 bg-black/5 p-8">
+
+            <h3
+              className="mb-6 text-center text-yellow-400"
+              style={{
+                fontFamily: '"Times New Roman", serif',
+                fontSize: "2rem",
+              }}
+            >
+              AI Answer
+            </h3>
+
+            <p className="whitespace-pre-wrap leading-9 text-gray-300">
+              {answer}
+            </p>
+
+          </div>
+
+          {evidence.length > 0 && (
+
+            <div className="mt-8 rounded-2xl border border-white/5 bg-black/5 p-8">
+
+              <h3
+                className="mb-6 text-center text-yellow-400"
+                style={{
+                  fontFamily: '"Times New Roman", serif',
+                  fontSize: "2rem",
+                }}
+              >
+                Evidence from YouTube Comments
+              </h3>
+
+              <div className="max-h-[420px] space-y-4 overflow-y-auto">
+
+                {evidence.map((comment, index) => (
+
+                  <div
+                    key={index}
+                    className="rounded-xl border border-white/5 bg-white/[0.02] p-5 leading-7 text-gray-300"
+                  >
+                    {comment}
+                  </div>
+
+                ))}
+
+              </div>
+
+            </div>
+
+          )}
+
+        </>
+
+      )}
+
+    </section>
+  );
+}

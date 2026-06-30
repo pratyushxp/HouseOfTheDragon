@@ -8,9 +8,8 @@ from app.retriever import retriever
 
 load_dotenv()
 
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 router = APIRouter()
 
@@ -35,11 +34,10 @@ You are an expert analyst of House of the Dragon YouTube discussions.
 Write a concise summary (120-150 words) of the character.
 
 Include:
-
-• Overall community opinion
-• Positive traits
-• Negative traits
-• Why the character is important
+- Overall community opinion
+- Positive traits
+- Negative traits
+- Why the character is important
 
 Only use the comments below.
 
@@ -56,10 +54,7 @@ CHARACTER
 {req.character}
 """
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
-    )
+    response = model.generate_content(prompt)
 
     return {
         "summary": response.text

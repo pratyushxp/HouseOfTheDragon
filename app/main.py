@@ -8,27 +8,23 @@ import os
 from app.retriever import retriever
 from app.summary import router as summary_router
 from app.comments import router as comments_router
-from app.retriever import retriever
-from app.summary import router as summary_router
-from app.comments import router as comments_router
 from app.characters.routes import router as characters_router
+
 load_dotenv()
 
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 app = FastAPI(title="HOTD Observatory API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Register API routes
 app.include_router(summary_router)
 app.include_router(comments_router)
 app.include_router(characters_router)
@@ -40,9 +36,7 @@ class Question(BaseModel):
 
 @app.get("/")
 def home():
-    return {
-        "message": "HOTD Observatory API Running"
-    }
+    return {"message": "HOTD Observatory API Running"}
 
 
 @app.post("/ask")
@@ -69,7 +63,6 @@ If viewers disagree, mention both sides.
 Never invent facts.
 
 If the comments don't answer the question, say:
-
 "I could not find enough evidence in the collected YouTube discussions."
 
 ========================
@@ -85,10 +78,7 @@ QUESTION
 {question.question}
 """
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
-    )
+    response = model.generate_content(prompt)
 
     return {
         "answer": response.text,

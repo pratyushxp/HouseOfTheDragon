@@ -6,6 +6,9 @@ type Props = {
   selectedCharacter?: string | null;
 };
 
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
 export default function AskMaester({
   selectedCharacter,
 }: Props) {
@@ -36,7 +39,7 @@ export default function AskMaester({
     setEvidence([]);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/ask", {
+      const res = await fetch(`${API_URL}/ask`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,9 +80,7 @@ export default function AskMaester({
 
   return (
     <section className="mt-12 rounded-3xl border border-white/5 bg-white/[0.015] backdrop-blur-md p-10">
-
       <div className="text-center">
-
         <h2
           className="text-white"
           style={{
@@ -93,21 +94,16 @@ export default function AskMaester({
         <p className="mt-3 text-lg text-gray-400">
           Ask questions based on 5,100 YouTube discussions.
         </p>
-
       </div>
 
       {!asked && (
-
         <div className="mt-10">
-
           <p className="mb-6 text-center font-semibold text-yellow-400">
             Suggested Questions
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">
-
             {suggestions.map((q) => (
-
               <button
                 key={q}
                 onClick={() => askQuestion(q)}
@@ -115,11 +111,9 @@ export default function AskMaester({
               >
                 {q}
               </button>
-
             ))}
 
             {selectedCharacter && (
-
               <button
                 onClick={() =>
                   askQuestion(
@@ -130,17 +124,12 @@ export default function AskMaester({
               >
                 What do viewers think about {selectedCharacter}?
               </button>
-
             )}
-
           </div>
-
         </div>
-
       )}
 
       <div className="mt-10 flex gap-4">
-
         <input
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
@@ -168,22 +157,17 @@ export default function AskMaester({
             New Question
           </button>
         )}
-
       </div>
 
       {loading && (
-
         <div className="mt-10 text-center text-yellow-400">
           Searching YouTube discussions...
         </div>
-
       )}
 
       {!loading && answer && (
-
         <>
           <div className="mt-10 rounded-2xl border border-white/5 bg-black/5 p-8">
-
             <h3
               className="mb-6 text-center text-yellow-400"
               style={{
@@ -197,13 +181,10 @@ export default function AskMaester({
             <p className="whitespace-pre-wrap leading-9 text-gray-300">
               {answer}
             </p>
-
           </div>
 
           {evidence.length > 0 && (
-
             <div className="mt-8 rounded-2xl border border-white/5 bg-black/5 p-8">
-
               <h3
                 className="mb-6 text-center text-yellow-400"
                 style={{
@@ -215,28 +196,19 @@ export default function AskMaester({
               </h3>
 
               <div className="max-h-[420px] space-y-4 overflow-y-auto">
-
                 {evidence.map((comment, index) => (
-
                   <div
                     key={index}
                     className="rounded-xl border border-white/5 bg-white/[0.02] p-5 leading-7 text-gray-300"
                   >
                     {comment}
                   </div>
-
                 ))}
-
               </div>
-
             </div>
-
           )}
-
         </>
-
       )}
-
     </section>
   );
 }

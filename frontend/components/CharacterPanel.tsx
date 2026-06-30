@@ -7,6 +7,9 @@ type Props = {
   mentions: number;
 };
 
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
 export default function CharacterPanel({
   character,
   mentions,
@@ -21,7 +24,7 @@ export default function CharacterPanel({
       setLoading(true);
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/summary", {
+        const res = await fetch(`${API_URL}/summary`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -31,8 +34,12 @@ export default function CharacterPanel({
           }),
         });
 
+        if (!res.ok) {
+          throw new Error("Failed to fetch summary");
+        }
+
         const data = await res.json();
-        setSummary(data.summary);
+        setSummary(data.summary ?? "No summary available.");
       } catch {
         setSummary("Failed to generate AI summary.");
       }
@@ -67,13 +74,8 @@ export default function CharacterPanel({
 
   return (
     <section className="rounded-3xl border border-white/5 bg-white/[0.015] backdrop-blur-md p-10">
-
-      {/* Character */}
-
       <div className="flex flex-col items-center text-center">
-
         <div className="relative">
-
           <div className="absolute inset-0 rounded-full bg-yellow-500/5 blur-[70px]" />
 
           <img
@@ -81,7 +83,6 @@ export default function CharacterPanel({
             alt={character}
             className="relative z-10 h-60 w-auto object-contain"
           />
-
         </div>
 
         <h1
@@ -97,13 +98,9 @@ export default function CharacterPanel({
         <div className="mt-5 rounded-full border border-yellow-500/20 bg-yellow-500/5 px-6 py-2 font-semibold text-yellow-300">
           {mentions} YouTube Mentions
         </div>
-
       </div>
 
-      {/* Summary */}
-
       <div className="mx-auto mt-10 max-w-4xl">
-
         <h2
           className="mb-8 text-center text-yellow-400"
           style={{
@@ -115,30 +112,20 @@ export default function CharacterPanel({
         </h2>
 
         {loading ? (
-
           <div className="space-y-4">
-
             <div className="h-4 animate-pulse rounded bg-white/5"></div>
             <div className="h-4 animate-pulse rounded bg-white/5"></div>
             <div className="h-4 animate-pulse rounded bg-white/5"></div>
             <div className="mx-auto h-4 w-2/3 animate-pulse rounded bg-white/5"></div>
-
           </div>
-
         ) : (
-
           <div className="rounded-2xl border border-white/5 bg-black/5 p-8">
-
             <p className="whitespace-pre-wrap text-center text-lg leading-9 text-gray-300">
               {summary}
             </p>
-
           </div>
-
         )}
-
       </div>
-
     </section>
   );
 }
